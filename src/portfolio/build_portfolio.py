@@ -40,8 +40,8 @@ def create_portfolio(df_wide):
             "Long-Rate": long.mean(),
             "Short-Rate": short.mean(),
 
-            # Calculate the theoretical carry advantage of the strategy
-            "Carry": long.mean() - short.mean()
+            # Calculate the theoretical carry advantage of the strategy (p.a.)
+            "Annual Carry": long.mean() - short.mean()
         })
 
 

@@ -26,6 +26,8 @@ def clean_rates():
         "OBS_VALUE": "rate"
     })
 
+    # Remove USD from the trading universe, as it serves only as the numéraire
+    df_clean = df_clean[df_clean["currency"] != "USA"]
 
     # Rename the EA20 area code to EUR for consistency with currency notation
     df_clean["currency"] = df_clean["currency"].replace("EA20", "EUR")
