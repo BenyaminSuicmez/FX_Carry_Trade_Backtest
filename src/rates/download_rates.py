@@ -1,4 +1,4 @@
-# This file serves the purpose of downloading raw data and storing it in "/data/raw"
+# This file serves the purpose of downloading raw data and storing it in "data/raw"
 import requests
 
 
@@ -7,7 +7,7 @@ def download():
     path_raw_csv = "data/raw/oecd_ir3tib_2015_2025.csv"
 
     response = requests.get(url=url)
-    response.raise_for_status() # Checking the connection of the API
+    response.raise_for_status() # Checking the connection of the API (output 200 is good)
 
     with open(path_raw_csv, "w", encoding="utf-8") as file:
         file.write(response.text)

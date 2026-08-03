@@ -3,7 +3,7 @@ import pandas as pd
 
 def clean_rates():
 
-    # File path to the raw CSV data downloaded by "src/download_rates.py"
+    # File path to the raw CSV data downloaded by "src/rates/download_rates.py"
     file_path = "data/raw/oecd_ir3tib_2015_2025.csv"
 
 

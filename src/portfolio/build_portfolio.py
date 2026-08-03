@@ -3,47 +3,77 @@ import pandas as pd
 
 def create_portfolio(df_wide):
 
-    # Initialize an empty list to store the portfolio composition of each quarter
+    # Initialize an empty list to store the quarterly portfolio decisions
     portfolio = []
 
 
+    # Define the last available FX trading quarter
+    max_trading_quarter = pd.Period(
+        "2025Q4",
+        freq="Q"
+    )
+
+
     # Iterate over each quarter in the cleaned wide-format interest rate dataset
-    # "_" is used because the row index is not needed
     for _, row in df_wide.iterrows():
 
-        # Create a ranking of currencies by their interest rate for the current quarter
-        # The quarter column is removed because it is not a currency
-        # Higher interest rates are ranked first
-        ranking = (
-            row.drop("quarter")
-                .astype(float)
-                .sort_values(ascending=False)
+        # Convert signal quarter into pandas Period format
+        signal_quarter = pd.Period(
+            row["quarter"],
+            freq="Q"
         )
 
 
-        # Select the three currencies with the highest interest rates as the long portfolio
+        # Portfolio is traded in the following quarter
+        trading_quarter = signal_quarter + 1
+
+
+        # Skip signals where no FX return data is available
+        if trading_quarter > max_trading_quarter:
+            continue
+
+
+        # Rank currencies by their interest rate
+        # Higher interest rates are ranked first
+        ranking = (
+            row.drop("quarter")
+               .astype(float)
+               .sort_values(ascending=False)
+        )
+
+
+        # Select three highest-yielding currencies as long positions
         long = ranking.head(3)
 
-        # Select the three currencies with the lowest interest rates as the short portfolio
+
+        # Select three lowest-yielding currencies as short positions
         short = ranking.tail(3)
 
 
-        # Store the portfolio decision and corresponding carry information for this quarter
+        # Store portfolio decision and carry characteristics
         portfolio.append({
-            "Quarter": row["quarter"],
 
-            # Store currency names instead of the complete Series
+            # Quarter where the information was observed
+            "Signal Quarter": str(signal_quarter),
+
+            # Quarter where the portfolio is actually traded
+            "Trading Quarter": str(trading_quarter),
+
+            # Currency composition
             "Long": long.index.tolist(),
             "Short": short.index.tolist(),
 
-            # Calculate the equally weighted average interest rate of each side
+            # Interest rate characteristics
             "Long-Rate": long.mean(),
             "Short-Rate": short.mean(),
 
-            # Calculate the theoretical carry advantage of the strategy (p.a.)
+            # Expected annual carry spread
             "Annual Carry": long.mean() - short.mean()
         })
 
 
-    # Convert the list of quarterly portfolios into a DataFrame for further analysis
-    return pd.DataFrame(portfolio)
+    # Convert portfolio list into DataFrame
+    portfolio_df = pd.DataFrame(portfolio)
+
+
+    return portfolio_df
