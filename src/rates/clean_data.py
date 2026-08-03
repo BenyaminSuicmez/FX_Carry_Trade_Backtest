@@ -29,8 +29,21 @@ def clean_rates():
     # Remove USD from the trading universe, as it serves only as the numéraire
     df_clean = df_clean[df_clean["currency"] != "USA"]
 
-    # Rename the EA20 area code to EUR for consistency with currency notation
-    df_clean["currency"] = df_clean["currency"].replace("EA20", "EUR")
+    # Convert OECD country codes into currency codes
+    # This aligns interest rate data with FX dataset naming
+    currency_map = {
+        "AUS": "AUD",
+        "CAN": "CAD",
+        "CHE": "CHF",
+        "EA20": "EUR",
+        "GBR": "GBP",
+        "JPN": "JPY",
+        "NOR": "NOK",
+        "NZL": "NZD",
+        "SWE": "SEK"
+    }
+
+    df_clean["currency"] = df_clean["currency"].replace(currency_map)
 
 
     # Create a temporary date column to enable chronological sorting by quarter

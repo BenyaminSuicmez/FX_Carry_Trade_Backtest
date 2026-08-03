@@ -11,5 +11,6 @@ fx_returns = fx_returns_calculation()
 
 
 
+print(wide_df.columns)
+
 print(portfolio_df.head())
-print(portfolio_df.tail())
