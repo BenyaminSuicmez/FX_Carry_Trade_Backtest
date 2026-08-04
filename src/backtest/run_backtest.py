@@ -11,18 +11,23 @@ def backtest():
 
     fx_returns_df = load_fx_returns()
 
-    # Assign each trading day to its calendar quarter, so we can
-    # match it against the "Trading Quarter" in portfolio_df
+    # Assign each trading day to its calendar quarter
     fx_returns_df["quarter"] = fx_returns_df["Date"].dt.to_period("Q")
 
-    # Collect daily portfolio returns across all quarters
+    # Cost assumptions
+    transaction_costs = 0.00005      # 0.5 bp
+    slippage = 0.00005               # 0.5 bp
+    funding_spread = 0.003 / 365     # 30 bp per year
+
     daily_returns = []
 
     for _, row in portfolio_df.iterrows():
 
         trading_quarter = pd.Period(row["Trading Quarter"], freq="Q")
 
-        days_in_quarter = fx_returns_df[fx_returns_df["quarter"] == trading_quarter]
+        days_in_quarter = fx_returns_df[
+            fx_returns_df["quarter"] == trading_quarter
+        ].copy()
 
         long_currencies = row["Long"]
         short_currencies = row["Short"]
@@ -32,12 +37,18 @@ def backtest():
 
         fx_return = long_returns - short_returns
 
-        # Convert the annualized carry into a daily amount using an
-        # Actual/365 day-count convention
+        # Daily carry using Actual/365
         daily_carry = row["Annual Carry"] / 100 / 365
 
-        # Total daily portfolio return combines FX movement and carry
-        portfolio_return = fx_return + daily_carry
+        # Gross return before costs
+        gross_return = fx_return + daily_carry
+
+        # Funding spread applies every day
+        portfolio_return = gross_return - funding_spread
+
+        # Transaction costs and slippage only on the first trading day
+        if len(days_in_quarter) > 0:
+            portfolio_return.iloc[0] -= (transaction_costs + slippage)
 
         quarter_result = pd.DataFrame({
             "Date": days_in_quarter["Date"],
@@ -48,7 +59,9 @@ def backtest():
 
         daily_returns.append(quarter_result)
 
-    # Combine all quarters into one continuous daily return series
+
     daily_returns_df = pd.concat(daily_returns, ignore_index=True)
+
+    daily_returns_df.to_csv("data/processed/backtest_returns.csv", index=False)
 
     return daily_returns_df
