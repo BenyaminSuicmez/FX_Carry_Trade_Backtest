@@ -7,6 +7,7 @@ from src.portfolio.build_portfolio import create_portfolio
 from src.fx.calculate_fx_return import fx_returns_calculation
 from src.fx.load_fx_return import load_fx_returns
 from src.backtest.run_backtest import backtest
+from src.performance.plot import plot_equity_curve, plot_drawdown
 
 
 # Download the OECD 3-month interest rate data.
@@ -55,4 +56,15 @@ fx_returns_calculation()
 fx_returns_df = load_fx_returns()
 
 # Run the carry trade backtest
-backtest(portfolio_df, fx_returns_df)
+backtest_df = backtest(portfolio_df, fx_returns_df)
+
+
+
+plot_equity_curve(
+    backtest_df["Date"],
+    backtest_df["Total Return"],
+    backtest_df["Carry Return"],
+    backtest_df["FX Return"]
+)
+
+plot_drawdown(backtest_df["Date"], backtest_df["Total Return"])
