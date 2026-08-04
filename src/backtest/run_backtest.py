@@ -1,15 +1,9 @@
 import pandas as pd
-from src.portfolio.build_portfolio import create_portfolio
-from src.rates.clean_data import clean_rates
-from src.fx.load_fx_return import load_fx_returns
+
+def backtest(portfolio_df, fx_returns_df):
 
 
-def backtest():
-
-    wide_df = clean_rates()
-    portfolio_df = create_portfolio(wide_df)
-
-    fx_returns_df = load_fx_returns()
+    fx_returns_df = fx_returns_df.copy()
 
     # Assign each trading day to its calendar quarter
     fx_returns_df["quarter"] = fx_returns_df["Date"].dt.to_period("Q")

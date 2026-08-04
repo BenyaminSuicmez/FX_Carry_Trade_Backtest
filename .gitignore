@@ -13,3 +13,6 @@ __pycache__/
 
 # vs code folder
 .vscode/
+
+# analysis file
+verify.py
