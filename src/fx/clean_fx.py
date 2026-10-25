@@ -24,6 +24,7 @@ def clean_fx():
     holidays_with_data_issues = pd.to_datetime([
             "2019-01-01",
             "2020-01-01",
+            "2020-03-20",   # bad Yahoo tick: USD/NOK 7.74 between 10.78 and 11.76
             "2021-01-01",
             "2021-12-27",
     ])

@@ -59,7 +59,6 @@ fx_returns_df = load_fx_returns()
 backtest_df = backtest(portfolio_df, fx_returns_df)
 
 
-
 plot_equity_curve(
     backtest_df["Date"],
     backtest_df["Total Return"],

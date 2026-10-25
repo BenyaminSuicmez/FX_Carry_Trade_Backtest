@@ -7,6 +7,9 @@ def backtest(portfolio_df, fx_returns_df):
 
     # Assign each trading day to its calendar quarter
     fx_returns_df["quarter"] = fx_returns_df["Date"].dt.to_period("Q")
+    
+    # Calendar days since previous trading day (weekends earn carry too)
+    fx_returns_df["days"] = fx_returns_df["Date"].diff().dt.days.fillna(1)
 
     # Cost assumptions
     transaction_costs = 0.00005      # 0.5 bp
@@ -32,13 +35,13 @@ def backtest(portfolio_df, fx_returns_df):
         fx_return = long_returns - short_returns
 
         # Daily carry using Actual/365
-        daily_carry = row["Annual Carry"] / 100 / 365
+        daily_carry = row["Annual Carry"] / 100 / 365 * days_in_quarter["days"]
 
         # Gross return before costs
         gross_return = fx_return + daily_carry
 
         # Funding spread applies every day
-        portfolio_return = gross_return - funding_spread
+        portfolio_return = gross_return - funding_spread * days_in_quarter["days"]
 
         # Transaction costs and slippage only on the first trading day
         if len(days_in_quarter) > 0:
