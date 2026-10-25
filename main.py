@@ -8,6 +8,8 @@ from src.fx.calculate_fx_return import fx_returns_calculation
 from src.fx.load_fx_return import load_fx_returns
 from src.backtest.run_backtest import backtest
 from src.performance.plot import plot_equity_curve, plot_drawdown
+from src.performance.metrics import annualized_return, annualized_volatility, sharpe_ratio, max_drawdown
+
 
 
 # Download the OECD 3-month interest rate data.
@@ -67,3 +69,11 @@ plot_equity_curve(
 )
 
 plot_drawdown(backtest_df["Date"], backtest_df["Total Return"])
+
+
+
+r = backtest_df["Total Return"]
+print(f"Annualized Return:     {annualized_return(r):.2%}")
+print(f"Annualized Volatility: {annualized_volatility(r):.2%}")
+print(f"Sharpe Ratio:          {sharpe_ratio(r):.2f}")
+print(f"Max Drawdown:          {max_drawdown(r):.1%}")

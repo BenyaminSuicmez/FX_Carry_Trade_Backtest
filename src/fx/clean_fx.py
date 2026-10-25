@@ -18,9 +18,8 @@ def clean_fx():
 
 
     # Known calendar days where Yahoo Finance reports unrealistic price
-    # spikes that fully reverse on the next trading day (no real FX
-    # trading happens on these dates, e.g. New Year's Day). Verified by
-    # comparing daily returns against independent historical FX data.
+    # spikes that fully reverse on the next trading day. Verified by
+    # comparing daily returns against independent historical FX data (such as numbers provided by teh FED).
     holidays_with_data_issues = pd.to_datetime([
             "2019-01-01",
             "2020-01-01",
